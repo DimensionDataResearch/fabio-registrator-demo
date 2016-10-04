@@ -1,14 +1,50 @@
 version: '2'
 services:
+  consul:
+    image: consul:v0.7.0
+    volumes:
+      - ${PWD}/volumes/consul/config:/consul/config
+    network_mode: bridge
+    ports:
+      - 8400:8400
+      - 8500:8500
+      - 8600:8600/udp
+    entrypoint: consul agent -server -config-dir=/consul/config
+    labels:
+      - SERVICE_IGNORE # Tell Registrator to ignore this container.
+  registrator:
+    depends_on:
+      - consul
+    image: gliderlabs/registrator:v7
+    network_mode: bridge
+    links:
+      - consul:consul      
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    entrypoint: /bin/registrator consul://consul:8500
   api-v1:
-    image: frd-api:v1
+    depends_on:
+      - registrator
+    image: frd-api-v1
     build: src/ApiV1
     network_mode: bridge
     ports:
       - 6920:6920
+    labels:
+        "SERVICE_NAME": "frd-api"
+        "SERVICE_TAGS": "api,v1"
+        "SERVICE_CHECK_HTTP": "/api/v1"
+        "SERVICE_CHECK_INTERVAL": "5s"
   api-v2:
-    image: frd-api:v2
+    depends_on:
+      - registrator
+    image: frd-api-v2
     build: src/ApiV2
     network_mode: bridge
     ports:
       - 6921:6921
+    labels:
+      "SERVICE_NAME": "frd-api"
+      "SERVICE_TAGS": "api,v2"
+      "SERVICE_CHECK_HTTP": "/api/v2"
+      "SERVICE_CHECK_INTERVAL": "5s"

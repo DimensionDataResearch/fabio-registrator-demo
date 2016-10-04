@@ -1,0 +1,9 @@
+{
+	"datacenter": "fabio-demo",
+	"bootstrap_expect": 1,
+	"client_addr": "0.0.0.0",
+	"data_dir": "/consul/data",
+	"log_level": "INFO",
+	"node_name": "consul",
+	"server": true
+}
