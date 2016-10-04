@@ -1,0 +1,14 @@
+version: '2'
+services:
+  api-v1:
+    image: frd-api:v1
+    build: src/ApiV1
+    network_mode: bridge
+    ports:
+      - 6920:6920
+  api-v2:
+    image: frd-api:v2
+    build: src/ApiV2
+    network_mode: bridge
+    ports:
+      - 6921:6921
