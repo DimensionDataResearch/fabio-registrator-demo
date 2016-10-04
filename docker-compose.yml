@@ -22,6 +22,19 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock
     entrypoint: /bin/registrator consul://consul:8500
+  fabio:
+    depends_on:
+      - consul
+    image: magiconair/fabio:1.3-go1.7.1
+    network_mode: bridge
+    ports:
+      - 5000:5000
+      - 5001:5001
+    links:
+      - consul:consul
+    volumes:
+      - ${PWD}/volumes/fabio/fabio.properties:/etc/fabio/fabio.properties
+    command: /fabio -cfg /etc/fabio/fabio.properties
   api-v1:
     depends_on:
       - registrator
@@ -32,7 +45,7 @@ services:
       - 6920:6920
     labels:
         "SERVICE_NAME": "frd-api"
-        "SERVICE_TAGS": "api,v1"
+        "SERVICE_TAGS": "api,v1,urlprefix-/api/v1"
         "SERVICE_CHECK_HTTP": "/api/v1"
         "SERVICE_CHECK_INTERVAL": "5s"
   api-v2:
@@ -45,6 +58,6 @@ services:
       - 6921:6921
     labels:
       "SERVICE_NAME": "frd-api"
-      "SERVICE_TAGS": "api,v2"
+      "SERVICE_TAGS": "api,v2,urlprefix-/api/v2"
       "SERVICE_CHECK_HTTP": "/api/v2"
       "SERVICE_CHECK_INTERVAL": "5s"

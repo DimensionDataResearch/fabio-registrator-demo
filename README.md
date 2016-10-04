@@ -18,6 +18,4 @@
 docker-compose up
 ```
 
-Then visit http://localhost:9020/api/v1 and http://localhost:9020/api/v2.
-
-TODO: Further documentation.
+Then visit http://localhost:5001 for UI or http://localhost:5000 for the proxied APIs.
