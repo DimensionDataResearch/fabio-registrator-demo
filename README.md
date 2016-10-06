@@ -14,7 +14,17 @@
 
 ## Getting started
 
-```bash
+To build:
+
+```
+dotnet restore
+dotnet publish src/ApiV1 -f netcoreapp1.0
+dotnet publish src/ApiV2 -f netcoreapp1.0
+docker-compose build
+```
+
+To run:
+```
 docker-compose up
 ```
 

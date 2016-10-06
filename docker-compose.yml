@@ -1,61 +1,89 @@
 version: '2'
 services:
+  # Consul (service discovery)
   consul:
     image: consul:v0.7.0
+    
     volumes:
-      - ${PWD}/volumes/consul/config:/consul/config
+      - ./volumes/consul/config:/consul/config # You can edit consul.json to customise consul behaviour
+    
     network_mode: bridge
     ports:
       - 8400:8400
       - 8500:8500
       - 8600:8600/udp
+    
     entrypoint: consul agent -server -config-dir=/consul/config
+    
     labels:
-      - SERVICE_IGNORE # Tell Registrator to ignore this container.
+      - SERVICE_IGNORE # Tell Registrator to ignore this container
+  
+  # Registrator (register containers as services in Consul)
   registrator:
     depends_on:
       - consul
+    
     image: gliderlabs/registrator:v7
+    
     network_mode: bridge
     links:
-      - consul:consul      
+      - consul:consul     
+    
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock
+      - /var/run/docker.sock:/tmp/docker.sock 
+
+    # Thanks to the link above, the Consul container's IP can can resolved using the host name "consul"
     entrypoint: /bin/registrator consul://consul:8500
+  
   fabio:
     depends_on:
       - consul
+    
     image: magiconair/fabio:1.3-go1.7.1
+    
     network_mode: bridge
     ports:
       - 5000:5000
       - 5001:5001
+    
     links:
       - consul:consul
+    
     volumes:
-      - ${PWD}/volumes/fabio/fabio.properties:/etc/fabio/fabio.properties
-    command: /fabio -cfg /etc/fabio/fabio.properties
+      - ./volumes/fabio/fabio.properties:/etc/fabio/fabio.properties
+  
+  # Our API end-point (v1).
   api-v1:
     depends_on:
       - registrator
+
     image: frd-api-v1
     build: src/ApiV1
+
     network_mode: bridge
     ports:
       - 6920:6920
+
+    # These labels (SERVICE_*) control how Registrator registers the container as a service in Consul 
     labels:
         "SERVICE_NAME": "frd-api"
         "SERVICE_TAGS": "api,v1,urlprefix-/api/v1"
         "SERVICE_CHECK_HTTP": "/api/v1"
         "SERVICE_CHECK_INTERVAL": "5s"
+
+  # Our API end-point (v2).
   api-v2:
     depends_on:
       - registrator
+    
     image: frd-api-v2
     build: src/ApiV2
+
     network_mode: bridge
     ports:
       - 6921:6921
+
+    # These labels (SERVICE_*) control how Registrator registers the container as a service in Consul
     labels:
       "SERVICE_NAME": "frd-api"
       "SERVICE_TAGS": "api,v2,urlprefix-/api/v2"
