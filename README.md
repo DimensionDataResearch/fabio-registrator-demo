@@ -4,9 +4,9 @@
 
 * [Fabio](https://github.com/eBay/fabio)  
   Acts as the front-end for APIs
-* 4 API end-points (.NET Core)
-  * 2 x API v1
-  * 2 x API v2
+* 2 API end-points (.NET Core)
+  * 1 x API v1
+  * 1 x API v2
 * [Consul](https://consul.io)  
   Service discovery / registration
 * [Registrator](https://gliderlabs.com/registrator/latest/)  
