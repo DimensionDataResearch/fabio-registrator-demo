@@ -17,7 +17,7 @@ namespace ApiV1
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
             if (env.IsDevelopment())
-                builder.AddUserSecrets();
+                builder.AddUserSecrets("FabioRegistratorDemo.API.V2");
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
