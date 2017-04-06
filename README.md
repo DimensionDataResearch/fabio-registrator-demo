@@ -18,8 +18,8 @@ To build:
 
 ```
 dotnet restore
-dotnet publish src/ApiV1 -f netcoreapp1.0
-dotnet publish src/ApiV2 -f netcoreapp1.0
+dotnet publish src/ApiV1 -f netcoreapp1.1
+dotnet publish src/ApiV2 -f netcoreapp1.1
 docker-compose build
 ```
 
@@ -28,4 +28,4 @@ To run:
 docker-compose up
 ```
 
-Then visit http://localhost:5001 for UI or http://localhost:5000 for the proxied APIs.
+Then visit http://localhost:5001 for UI or http://localhost:5000/api/v1 / http://localhost:5000/api/v2 for the proxied APIs.
